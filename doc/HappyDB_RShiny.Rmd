@@ -23,7 +23,6 @@ From the packages' descriptions:
 + `Shiny` is an R package that makes it easy to build interactive web apps straight from R;
 
 ```{r load libraries, warning=FALSE, message=FALSE}
-
 library(tidyverse)
 library(tidytext)
 library(DT)
@@ -32,6 +31,7 @@ library(wordcloud2)
 library(gridExtra)
 library(ngram)
 library(shiny) 
+library(wordcloud)
 ```
 
 ### Step 1 - Load the processed text data along with demographic information on contributors
@@ -74,15 +74,235 @@ hm_data <- hm_data %>%
 ```{r}
 datatable(hm_data)
 ```
+# Level I: Simple wordcloud analysis
+
+As a graduate student who are in their early 20s, we are interested in what will make us happy when we are in our 30s. More specifically, we want to see what is the difference between our 20s and 30s when we further diversify the sample into gender and parenthood. Here are some sample questions that we wish to answer after finishing our analysis:
+1. What makes us happy 20s vs. 30s?
+2. What makes us happy 20s(parenthood) vs. 30s(parenthood)?
+3. What makes us happy 20s (male) vs. 30s (male)?
+
+```{r}
+hm_data$num_age <-as.numeric(hm_data$age)
+hm_data<-hm_data[is.na(hm_data$num_age)!=T,]
+age_between_20_30 <- hm_data[hm_data$num_age>=20&hm_data$num_age<30,]
+age_between_30_40 <- hm_data[hm_data$num_age>=30&hm_data$num_age<40,]
+```
+
 ### Create a bag of words using the text data
 
 ```{r bag of words, warning=FALSE, message=FALSE}
 bag_of_words <-  hm_data %>%
   unnest_tokens(word, text)
-
 word_count <- bag_of_words %>%
   count(word, sort = TRUE)
+
+word_age_between_20_30 <-age_between_20_30 %>%
+  unnest_tokens(word, text)
+word_count_age_between_20_30 <- word_age_between_20_30 %>%
+  count(word,sort = TRUE)
+
+word_age_between_30_40 <-age_between_30_40 %>%
+  unnest_tokens(word, text)
+word_count_age_between_30_40 <- word_age_between_30_40 %>%
+  count(word,sort = TRUE)
 ```
+
+```{r}
+wordcloud(words=word_count_age_between_20_30$word,freq=word_count_age_between_20_30$n,
+           min.freq=10, max.words= 100, random.order = F, rot.per = .35, colors = brewer.pal(8,"Dark2"))
+
+wordcloud(words=word_count_age_between_30_40$word,freq=word_count_age_between_30_40$n,
+           min.freq=10, max.words= 100, random.order = F, rot.per = .35, colors = brewer.pal(8,"Dark2"))
+```
+
+As we can see from the wordcloud that for people in their 20s, friend/day/time are most frequent things showing up in the survey. And the other more frequent things are game/birthday/enjoyed/fun. While as for people in their 30s, once again, day/friend/time are most frequent. However, the other more frequent things are a bit different whic are home/family/son/wife/feel/fun...From the output we can infer when people aging from 20 to 30ish, their concentrations of life shift to family yet things make them happy in their 20s are still playing an important role in their lifef making them happy.
+
+```{r}
+age_between_20_30_parenthood <- age_between_20_30[age_between_20_30$parenthood=="y",]
+age_between_30_40_parenthood <- age_between_30_40[age_between_30_40$parenthood=="y",]
+```
+
+### Create a bag of words using the text data
+
+```{r bag of words, warning=FALSE, message=FALSE}
+bag_of_words <-  hm_data %>%
+  unnest_tokens(word, text)
+word_count <- bag_of_words %>%
+  count(word, sort = TRUE)
+
+word_age_between_20_30_parenthood <-age_between_20_30_parenthood %>%
+  unnest_tokens(word, text)
+word_count_age_between_20_30_parenthood <- word_age_between_20_30_parenthood %>%
+  count(word,sort = TRUE)
+
+word_age_between_30_40_parenthood <-age_between_30_40_parenthood %>%
+  unnest_tokens(word, text)
+word_count_age_between_30_40_parenthood <- word_age_between_30_40_parenthood %>%
+  count(word,sort = TRUE)
+```
+
+```{r}
+wordcloud(words=word_age_between_20_30_parenthood$word,freq=word_count_age_between_20_30_parenthood$n,
+           min.freq=10, max.words= 100, random.order = F, rot.per = .35, colors = brewer.pal(8,"Dark2"))
+
+wordcloud(words=word_count_age_between_30_40_parenthood$word,freq=word_count_age_between_30_40_parenthood$n,
+           min.freq=10, max.words= 100, random.order = F, rot.per = .35, colors = brewer.pal(8,"Dark2"))
+```
+As we can see for people in their 20s with parenthood, what makes them happy is something like son/movie/fun/run/time which is not too different from those without parenthood. Maybe is because they are new parents? Or maybe they are just beginning learning how to be a great parent?
+
+In contrast, for people in their 30s with parenthood, they are more mature folks. What makes them happy is somehing like Son/family/husband/wife/life/kids. They are more family oriented. It makes sense because after years training/practice to be great parent, being family oriented is an important factor that should be attributed to. 
+
+In addition, I have to point out that there might be some bias in the sample which can be explained properly. For example, anger makes people happy? This does not make any sense generally.
+
+```{r}
+age_between_20_30_male <- age_between_20_30[age_between_20_30$gender=="m",]
+age_between_30_40_male <- age_between_30_40[age_between_30_40$gender=="m",]
+```
+
+### Create a bag of words using the text data
+
+```{r bag of words, warning=FALSE, message=FALSE}
+bag_of_words <-  hm_data %>%
+  unnest_tokens(word, text)
+word_count <- bag_of_words %>%
+  count(word, sort = TRUE)
+
+word_age_between_20_30_male <-age_between_20_30_male %>%
+  unnest_tokens(word, text)
+word_count_age_between_20_30_male <- word_age_between_20_30_male %>%
+  count(word,sort = TRUE)
+
+word_age_between_30_40_male <-age_between_30_40_male %>%
+  unnest_tokens(word, text)
+word_count_age_between_30_40_male <- word_age_between_30_40_male %>%
+  count(word,sort = TRUE)
+```
+
+```{r}
+wordcloud(words=word_age_between_20_30_male$word,freq=word_count_age_between_20_30_male$n,
+           min.freq=10, max.words= 100, random.order = F, rot.per = .35, colors = brewer.pal(8,"Dark2"))
+
+wordcloud(words=word_count_age_between_30_40_male$word,freq=word_count_age_between_30_40_male$n,
+           min.freq=10, max.words= 100, random.order = F, rot.per = .35, colors = brewer.pal(8,"Dark2"))
+```
+For people like me who are in their 20s and are male, what makes them happy is something like examination/birthday/night/girl:) This is not a surprise for me. However,what surprises me is that son is the most frequent word here. As a result, I certainly doubt the sample or the result since this is a bit weird for a society that is considered having gender equality.
+
+Well, things will change when we (male in 20s) turn to our 30s. We will become more reliable gentlemen. What makes us happy is friend/family/home...I look forward getting aged to some extend based on the output.
+
+# Level II: Sentiment Analysis
+
+```{r}
+age_between_20_30%>%
+  unnest_tokens(word, text)%>%
+  select(word)%>%
+  inner_join(get_sentiments("nrc"))%>%
+  count(word,sentiment, sort=T)%>%
+  ungroup()%>%
+  group_by(sentiment)%>%
+  top_n(10)%>%
+  ungroup()%>%
+  mutate(word=reorder(word, n))%>%
+  ggplot(aes(word, n, fill=sentiment))+
+  geom_col(show.legend = F)+
+  facet_wrap(~sentiment,scales = "free_y")+
+  labs(y="conttribution", 
+       x=NULL)+
+  coord_flip()
+
+age_between_30_40%>%
+  unnest_tokens(word, text)%>%
+  select(word)%>%
+  inner_join(get_sentiments("nrc"))%>%
+  count(word,sentiment, sort=T)%>%
+  ungroup()%>%
+  group_by(sentiment)%>%
+  top_n(10)%>%
+  ungroup()%>%
+  mutate(word=reorder(word, n))%>%
+  ggplot(aes(word, n, fill=sentiment))+
+  geom_col(show.legend = F)+
+  facet_wrap(~sentiment,scales = "free_y")+
+  labs(y="conttribution", 
+       x=NULL)+
+  coord_flip()
+```
+# from the sentiment analysis we can see that people who are older (30s) have less fear emotion and more joy emotion than people who are in their 20s. It might be attributed to as people getting more sophisticated they can better distinguish joy between fear. However, we notice that for the same word "money", elder people tend to be anger on it. Maybe it is because people realize money is evil? But if we spell back evil, it is live...That's a bonus finding:)
+
+# Level III: Topic Modelling 
+
+```{r}
+happy.moment=read.csv("../output/processed_moments.csv", stringsAsFactors = FALSE)
+demographic=read.csv("../data/demographic.csv")
+senselabel=read.csv("../data/senselabel.csv")
+Happy.text <- happy.moment$text
+Happy.text <- happy.moment$text
+docs <- Corpus(VectorSource(Happy.text))
+dtm <- DocumentTermMatrix(docs)
+rowTotals <- slam::row_sums(dtm) #Find the sum of words in each Document
+dtm <- dtm[rowTotals> 0, ]
+happy.moment <- happy.moment[rowTotals> 0, ]
+
+#####Topic Modelling by the LDA method#####
+
+burnin <- 4000
+iter <- 2000
+thin <- 500
+seed <-list(2003,5,63,100001,765)
+nstart <- 5
+best <- TRUE
+
+#Number of topics
+k <- 10
+
+#Run LDA using Gibbs sampling
+ldaOut <-LDA(dtm, k, method="Gibbs", control=list(nstart=nstart, 
+                                                 seed = seed, best=best,
+                                                 burnin = burnin, iter = iter, 
+                                                 thin=thin))
+#write out results
+#docs to topics
+ldaOut.topics <- as.matrix(topics(ldaOut))
+table(c(1:k, ldaOut.topics))
+write.csv(ldaOut.topics,file=paste("../output/LDAGibbs",k,"DocsToTopics.csv"))
+
+#top 6 terms in each topic
+ldaOut.terms <- as.matrix(terms(ldaOut,20))
+write.csv(ldaOut.terms,file=paste("../output/LDAGibbs",k,"TopicsToTerms.csv"))
+
+#probabilities associated with each topic assignment
+topicProbabilities <- as.data.frame(ldaOut@gamma)
+write.csv(topicProbabilities,file=paste("../output/LDAGibbs",k,"TopicProbabilities.csv"))
+
+
+terms.beta=ldaOut@beta
+terms.beta=scale(terms.beta)
+topics.terms=NULL
+for(i in 1:k){
+  topics.terms=rbind(topics.terms, ldaOut@terms[order(terms.beta[i,], decreasing = TRUE)[1:60]])
+}
+
+for(i in 1:k){
+  topics.terms=rbind(topics.terms, ldaOut@terms[order(terms.beta[i,], decreasing = TRUE)[1:60]])
+}
+
+#par(mfrow = c(5, 2), mar = c(1,1,2,0), bty = "n", xaxt = "n", yaxt = "n")
+# visualize topics as word cloud
+for (i in c(2,3,4,6,8,9,10)) {
+  topicToViz <- i
+# select to 40 most probable terms from the topic by sorting the term-topic-probability vector in decreasing order
+  top40terms <- topics.terms[i,]
+# extract the probabilites of each of the 40 terms
+  hm_results <- posterior(ldaOut)
+  probabilities <- sort(hm_results$terms[topicToViz,], decreasing=TRUE)[1:60]
+# visualize the terms as wordcloud
+  mycolors <- brewer.pal(8, "Dark2")
+  wordcloud(top40terms, probabilities, random.order = FALSE, color = mycolors)
+}
+
+#topics.terms
+ldaOut.terms
+```
+As we can see from the output, the hottest 10 topics from Happy Moment dataset can be categorized into "found", "day", "time", "morning", "feel", "dinner", "friend","watched"    "finally", and "walk".   
 
 ### Create bigrams using the text data
 
