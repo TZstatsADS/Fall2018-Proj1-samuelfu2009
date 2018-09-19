@@ -9,7 +9,7 @@ This is the first and only *individual* (as opposed to *team*) this semester.
 
 Term: Fall 2018
 
-+ Projec title: Happy Moments - a study tageting people in their 20s an 30s
++ Projec title: Happy Moments - a Study Tageting at People in Their 20s and 30s
 + This project is conducted by [Sen Fu sf2873]
 
 + Project summary: 
