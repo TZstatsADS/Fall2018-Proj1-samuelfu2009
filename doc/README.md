@@ -3,4 +3,4 @@
 
 The doc directory contains the report or presentation files. It can have subfolders.  
 
-Please Run Text_Processing.rmd file prior running the Proect1_SF.rmd
+Please Run Text_Processing.rmd file prior running the Project1_SF.rmd
