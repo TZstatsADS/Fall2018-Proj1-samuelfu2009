@@ -226,7 +226,7 @@ age_between_30_40%>%
        x=NULL)+
   coord_flip()
 ```
-# from the sentiment analysis we can see that people who are older (30s) have less fear emotion and more joy emotion than people who are in their 20s. It might be attributed to as people getting more sophisticated they can better distinguish joy between fear. However, we notice that for the same word "money", elder people tend to be anger on it. Maybe it is because people realize money is evil? But if we spell back evil, it is live...That's a bonus finding:)
+from the sentiment analysis we can see that people who are older (30s) have less fear emotion and more joy emotion than people who are in their 20s. It might be attributed to as people getting more sophisticated they can better distinguish joy between fear. However, we notice that for the same word "money", elder people tend to be anger on it. Maybe it is because people realize money is evil? But if we spell back evil, it is live...That's a bonus finding:)
 
 # Level III: Topic Modelling 
 
