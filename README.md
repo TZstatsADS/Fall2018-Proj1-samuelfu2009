@@ -9,12 +9,13 @@ This is the first and only *individual* (as opposed to *team*) this semester.
 
 Term: Fall 2018
 
-+ Projec title: Lorem ipsum dolor sit amet
++ Projec title: Happy Moments
 + This project is conducted by [Sen Fu]
 
-+ Project summary: [a short summary] Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
++ Project summary: 
+In this project, we analyzed what are people's happy moments by employing three types of methods including simple sentences analysis, sentiment anlaysis and topic modeling. Specifically, we looked into the cohort of people in their 20s and 30s since we are in our 20s and we are interested in what makes our contempoararies happy and what it will be like in the next 10 years or so when we are in our 30s.
 
-Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
+The folder is orgarnized as follows.
 
 ```
 proj/
