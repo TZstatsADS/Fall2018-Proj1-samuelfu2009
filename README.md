@@ -18,6 +18,7 @@ In this project, we analyzed what are people's happy moments by employing three 
 Below is the RMD file which contains my codes and analysis:
 + [Text_Processing.Rmd](doc/)
 + [Project1_SF.Rmd](doc/)
++ [Project1_SF.html](doc/)
 
 The folder is orgarnized as follows.
 
