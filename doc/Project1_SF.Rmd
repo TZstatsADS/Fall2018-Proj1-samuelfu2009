@@ -1,8 +1,7 @@
 ---
 title: "Happy Moments"
 author: "Sen Fu"
-output: html
-runtime: shiny
+output: html_document
 ---
 
 HappyDB is a corpus of 100,000 crowd-sourced happy moments via Amazon's Mechanical Turk. You can read more about it on https://arxiv.org/abs/1801.07746.
@@ -88,9 +87,9 @@ age_between_20_30 <- hm_data[hm_data$num_age>=20&hm_data$num_age<30,]
 age_between_30_40 <- hm_data[hm_data$num_age>=30&hm_data$num_age<40,]
 ```
 
-### Create a bag of words using the text data
+### Create a bag of words (1) using the text data
 
-```{r bag of words, warning=FALSE, message=FALSE}
+```{r bag of words (1), warning=FALSE, message=FALSE}
 bag_of_words <-  hm_data %>%
   unnest_tokens(word, text)
 word_count <- bag_of_words %>%
@@ -124,7 +123,7 @@ age_between_30_40_parenthood <- age_between_30_40[age_between_30_40$parenthood==
 
 ### Create a bag of words using the text data
 
-```{r bag of words, warning=FALSE, message=FALSE}
+```{r bag of words (2), warning=FALSE, message=FALSE}
 bag_of_words <-  hm_data %>%
   unnest_tokens(word, text)
 word_count <- bag_of_words %>%
@@ -161,7 +160,7 @@ age_between_30_40_male <- age_between_30_40[age_between_30_40$gender=="m",]
 
 ### Create a bag of words using the text data
 
-```{r bag of words, warning=FALSE, message=FALSE}
+```{r bag of words (3), warning=FALSE, message=FALSE}
 bag_of_words <-  hm_data %>%
   unnest_tokens(word, text)
 word_count <- bag_of_words %>%
@@ -227,81 +226,4 @@ age_between_30_40%>%
   coord_flip()
 ```
 from the sentiment analysis we can see that people who are older (30s) have less fear emotion and more joy emotion than people who are in their 20s. It might be attributed to as people getting more sophisticated they can better distinguish joy between fear. However, we notice that for the same word "money", elder people tend to be anger on it. Maybe it is because people realize money is evil? But if we spell back evil, it is live...That's a bonus finding:)
-
-# Level III: Topic Modelling 
-
-```{r}
-happy.moment=read.csv("../output/processed_moments.csv", stringsAsFactors = FALSE)
-demographic=read.csv("../data/demographic.csv")
-senselabel=read.csv("../data/senselabel.csv")
-Happy.text <- happy.moment$text
-Happy.text <- happy.moment$text
-docs <- Corpus(VectorSource(Happy.text))
-dtm <- DocumentTermMatrix(docs)
-rowTotals <- slam::row_sums(dtm) #Find the sum of words in each Document
-dtm <- dtm[rowTotals> 0, ]
-happy.moment <- happy.moment[rowTotals> 0, ]
-
-#####Topic Modelling by the LDA method#####
-
-burnin <- 4000
-iter <- 2000
-thin <- 500
-seed <-list(2003,5,63,100001,765)
-nstart <- 5
-best <- TRUE
-
-#Number of topics
-k <- 10
-
-#Run LDA using Gibbs sampling
-ldaOut <-LDA(dtm, k, method="Gibbs", control=list(nstart=nstart, 
-                                                 seed = seed, best=best,
-                                                 burnin = burnin, iter = iter, 
-                                                 thin=thin))
-#write out results
-#docs to topics
-ldaOut.topics <- as.matrix(topics(ldaOut))
-table(c(1:k, ldaOut.topics))
-write.csv(ldaOut.topics,file=paste("../output/LDAGibbs",k,"DocsToTopics.csv"))
-
-#top 6 terms in each topic
-ldaOut.terms <- as.matrix(terms(ldaOut,20))
-write.csv(ldaOut.terms,file=paste("../output/LDAGibbs",k,"TopicsToTerms.csv"))
-
-#probabilities associated with each topic assignment
-topicProbabilities <- as.data.frame(ldaOut@gamma)
-write.csv(topicProbabilities,file=paste("../output/LDAGibbs",k,"TopicProbabilities.csv"))
-
-
-terms.beta=ldaOut@beta
-terms.beta=scale(terms.beta)
-topics.terms=NULL
-for(i in 1:k){
-  topics.terms=rbind(topics.terms, ldaOut@terms[order(terms.beta[i,], decreasing = TRUE)[1:60]])
-}
-
-for(i in 1:k){
-  topics.terms=rbind(topics.terms, ldaOut@terms[order(terms.beta[i,], decreasing = TRUE)[1:60]])
-}
-
-#par(mfrow = c(5, 2), mar = c(1,1,2,0), bty = "n", xaxt = "n", yaxt = "n")
-# visualize topics as word cloud
-for (i in c(2,3,4,6,8,9,10)) {
-  topicToViz <- i
-# select to 40 most probable terms from the topic by sorting the term-topic-probability vector in decreasing order
-  top40terms <- topics.terms[i,]
-# extract the probabilites of each of the 40 terms
-  hm_results <- posterior(ldaOut)
-  probabilities <- sort(hm_results$terms[topicToViz,], decreasing=TRUE)[1:60]
-# visualize the terms as wordcloud
-  mycolors <- brewer.pal(8, "Dark2")
-  wordcloud(top40terms, probabilities, random.order = FALSE, color = mycolors)
-}
-
-#topics.terms
-ldaOut.terms
-```
-As we can see from the output, the hottest 10 topics from Happy Moment dataset can be categorized into "found", "day", "time", "morning", "feel", "dinner", "friend","watched"    "finally", and "walk".   
-
 
